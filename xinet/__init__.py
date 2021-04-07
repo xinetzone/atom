@@ -1,11 +1,18 @@
 """refer to "Dive into Deep Learning" (https://d2l.ai).
 
-Please import d2l by one of the following ways:
+Example
+================================
+from xinet import mxnet as xinet  # Use MXNet as the backend
+from xinet import torch as xinet  # Use PyTorch as the backend
+from xinet import tensorflow as xinet # Use TensorFlow as the backend
+from xinet import utils as xutils
 
-from d2l import mxnet as d2l  # Use MXNet as the backend
-from d2l import torch as d2l  # Use PyTorch as the backend
-from d2l import tensorflow as d2l  # Use TensorFlow as the backend
+np = xinet.np
 
+def normal(x, mu, sigma):
+    p = 1 / np.sqrt(2 * np.pi * sigma**2)
+    return p * np.exp(-0.5 / sigma**2 * (x - mu)**2)
+================================
 """
 
 __version__ = "0.0.1"

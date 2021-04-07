@@ -5,6 +5,7 @@ from .chaos import import_np, load_array as _load_array
 _name = __name__.split('.')[1]
 
 np = import_np(_name)
+np.pi = np.acos(np.zeros(1)) * 2 
 
 xinet = sys.modules[__name__]
 
