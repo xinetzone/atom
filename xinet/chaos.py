@@ -45,3 +45,14 @@ def load_array(module_name, data_arrays, batch_size, is_train=True):
     elif module_name == 'tensorflow':
         from tensorflow import data
         return load_array_tf(data, data_arrays, batch_size, is_train)
+
+def load_nn(module_name):
+    if module_name == 'mxnet':
+        from mxnet.gluon import nn
+    elif module_name == 'torch':
+        from torch import nn
+    elif module_name == 'tensorflow':
+        from tensorflow.keras import layers as nn
+        from tensorflow.keras.models import Sequential
+        nn.Sequential = Sequential
+    return nn
