@@ -75,7 +75,7 @@ def accuracy(y_hat, y):
     return float(sum(cmp.type(y.dtype)))
 
 
-def train_epoch(net, train_iter, loss, updater):
+def train_epoch(net, train_iter, loss, updater, num_classes=10):
     """训练模型一个迭代周期（定义见第3章）。"""
     # 将模型设置为训练模式
     if isinstance(net, torch.nn.Module):
@@ -85,7 +85,12 @@ def train_epoch(net, train_iter, loss, updater):
     for X, y in train_iter:
         # 计算梯度并更新参数
         y_hat = net(X)
-        l = loss(y_hat, y)
+        if isinstance(loss, nn.MSELoss):
+            y_ = nn.functional.one_hot(y, num_classes=num_classes)
+            y_ = y_.type(torch.float)
+            l = loss(y_hat, y_)
+        else:
+            l = loss(y_hat, y)
         if isinstance(updater, torch.optim.Optimizer):
             # 使用PyTorch内置的优化器和损失函数
             updater.zero_grad()
