@@ -47,6 +47,26 @@ def load_data_fashion_mnist(batch_size, resize=None):
                             num_workers=get_dataloader_workers()))
 
 
+def load_data_mnist(batch_size, resize=None):
+    """下载Fashion-MNIST数据集，然后将其加载到内存中。"""
+    trans = [transforms.ToTensor()]
+    if resize:
+        trans.insert(0, transforms.Resize(resize))
+    trans = transforms.Compose(trans)
+    mnist_train = torchvision.datasets.MNIST(root="../data",
+                                             train=True,
+                                             transform=trans,
+                                             download=True)
+    mnist_test = torchvision.datasets.MNIST(root="../data",
+                                            train=False,
+                                            transform=trans,
+                                            download=True)
+    return (data.DataLoader(mnist_train, batch_size, shuffle=True,
+                            num_workers=get_dataloader_workers()),
+            data.DataLoader(mnist_test, batch_size, shuffle=False,
+                            num_workers=get_dataloader_workers()))
+
+
 def accuracy(y_hat, y):
     """计算预测正确的数量。"""
     if len(y_hat.shape) > 1 and y_hat.shape[1] > 1:
