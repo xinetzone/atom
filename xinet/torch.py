@@ -23,8 +23,8 @@ xinet = sys.modules[__name__]
 
 
 def get_dataloader_workers():
-    """使用4个进程来读取的数据。"""
-    return 4
+    """在非Windows的平台上，使用4个进程来读取的数据。"""
+    return 0 if sys.platform.startswith('win') else 4
 
 
 def load_data_fashion_mnist(batch_size, resize=None):
@@ -48,7 +48,7 @@ def load_data_fashion_mnist(batch_size, resize=None):
 
 
 def load_data_mnist(batch_size, resize=None):
-    """下载Fashion-MNIST数据集，然后将其加载到内存中。"""
+    """下载 MNIST 数据集，然后将其加载到内存中。"""
     trans = [transforms.ToTensor()]
     if resize:
         trans.insert(0, transforms.Resize(resize))
