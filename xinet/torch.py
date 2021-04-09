@@ -154,6 +154,15 @@ def evaluate_accuracy(net, data_iter):
     return metric[0] / metric[1]
 
 
+def evaluate_loss(net, data_iter, loss):
+    """Evaluate the loss of a model on the given dataset."""
+    metric = Accumulator(2)  # Sum of losses, no. of examples
+    for X, y in data_iter:
+        l = loss(net(X), y)
+        metric.add(float(sum(l)), len(l))
+    return metric[0] / metric[1]
+
+
 def train(net, train_iter, test_iter, loss, num_epochs, updater, ylim=None):
     """训练模型（定义见第3章）。"""
     animator = Animator(xlabel='epoch', xlim=[1, num_epochs], ylim=ylim,
