@@ -6,12 +6,11 @@ from mxnet import gluon
 from mxnet import autograd
 
 from .utils import Accumulator, Animator
-from .chaos import import_np, load_array as _load_array, load_nn
+from .chaos import import_np, load_array as _load_array
 
 _name = __name__.split('.')[1]
 
 np = import_np(_name)
-nn = load_nn(_name)
 
 xinet = sys.modules[__name__]
 

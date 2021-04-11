@@ -6,7 +6,7 @@ with open("README.md", "r", encoding='utf-8') as fh:
 
 setuptools.setup(
     name="xint",  # Replace with your own username
-    version="0.0.2",
+    version="0.0.3",
     author="Xinwei Liu",
     author_email="735613050@qq.com",
     description="Use Python to create and explor world.",

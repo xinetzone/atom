@@ -7,14 +7,12 @@ from torch.utils import data
 from torchvision import transforms
 
 from .utils import Accumulator, Animator
-from .chaos import import_np, load_array as _load_array, load_nn
+from .chaos import import_np, load_array as _load_array
 
 _name = __name__.split('.')[1]
 
 np = import_np(_name)
 np.pi = np.acos(np.zeros(1)) * 2
-
-nn = load_nn(_name)
 
 xinet = sys.modules[__name__]
 

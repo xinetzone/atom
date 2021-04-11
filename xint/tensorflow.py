@@ -2,14 +2,14 @@ import sys
 from matplotlib import pyplot as plt
 
 import tensorflow as tf
+from tensorflow.keras.callbacks import Callback
 
-from .utils import Accumulator, Animator
-from .chaos import import_np, load_array as _load_array, load_nn
+from .utils import Accumulator, Animator, Timer
+from .chaos import import_np, load_array as _load_array
 
 _name = __name__.split('.')[1]
 
 np = import_np(_name)
-nn = load_nn(_name)
 
 xinet = sys.modules[__name__]
 
@@ -51,12 +51,7 @@ def train_epoch(net, train_iter, loss, updater):
         # 计算梯度并更新参数
         with tf.GradientTape() as tape:
             y_hat = net(X)
-            # Keras内置的损失接受的是（标签，预测），这不同于用户在本书中的实现。
-            # 本书的实现接受（预测，标签），例如我们上面实现的“交叉熵”
-            if isinstance(loss, tf.keras.losses.Loss):
-                l = loss(y, y_hat)
-            else:
-                l = loss(y_hat, y)
+            l = loss(y_true=y, y_pred=y_hat)
         if isinstance(updater, tf.keras.optimizers.Optimizer):
             params = net.trainable_variables
             grads = tape.gradient(l, params)
@@ -148,7 +143,7 @@ def evaluate_loss(net, data_iter, loss):
     return metric[0] / metric[1]
 
 
-def train(net, train_iter, test_iter, loss, num_epochs, updater, ylim=None):
+def train_simple(net, train_iter, test_iter, loss, num_epochs, updater, ylim=None):
     """训练模型（定义见第3章）。"""
     animator = Animator(xlabel='epoch', xlim=[1, num_epochs], ylim=ylim,
                         legend=['train loss', 'train acc', 'test acc'])
@@ -157,3 +152,51 @@ def train(net, train_iter, test_iter, loss, num_epochs, updater, ylim=None):
         test_acc = evaluate_accuracy(net, test_iter)
         animator.add(epoch + 1, train_metrics + (test_acc,))
     #train_loss, train_acc = train_metrics
+
+
+class TrainCallback(Callback):
+    """A callback to visiualize the training progress."""
+
+    def __init__(self, net, train_iter, test_iter, num_epochs, device_name):
+        self.timer = Timer()
+        self.animator = Animator(
+            xlabel='epoch', xlim=[1, num_epochs],
+            legend=['train loss', 'train acc', 'test acc'])
+        self.net = net
+        self.train_iter = train_iter
+        self.test_iter = test_iter
+        self.num_epochs = num_epochs
+        self.device_name = device_name
+
+    def on_epoch_begin(self, epoch, logs=None):
+        self.timer.start()
+
+    def on_epoch_end(self, epoch, logs):
+        self.timer.stop()
+        test_acc = self.net.evaluate(self.test_iter, verbose=0,
+                                     return_dict=True)['accuracy']
+        metrics = (logs['loss'], logs['accuracy'], test_acc)
+        self.animator.add(epoch + 1, metrics)
+        if epoch == self.num_epochs - 1:
+            batch_size = next(iter(self.train_iter))[0].shape[0]
+            num_examples = batch_size * tf.data.experimental.cardinality(
+                self.train_iter).numpy()
+            print(f'loss {metrics[0]:.3f}, train acc {metrics[1]:.3f}, '
+                  f'test acc {metrics[2]:.3f}')
+            print(f'{num_examples / self.timer.avg():.1f} examples/sec on '
+                  f'{str(self.device_name)}')
+
+
+def train(net_fn, train_iter, test_iter, num_epochs, lr, device):
+    """Train a model with a GPU (defined in Chapter 6)."""
+    device_name = device._device_name
+    strategy = tf.distribute.OneDeviceStrategy(device_name)
+    with strategy.scope():
+        optimizer = tf.keras.optimizers.SGD(learning_rate=lr)
+        loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+        net = net_fn()
+        net.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
+    callback = TrainCallback(net, train_iter, test_iter, num_epochs,
+                             device_name)
+    net.fit(train_iter, epochs=num_epochs, verbose=0, callbacks=[callback])
+    return net
