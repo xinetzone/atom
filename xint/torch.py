@@ -2,6 +2,7 @@ import sys
 from matplotlib import pyplot as plt
 
 import torch
+from torch import nn
 import torchvision
 from torch.utils import data
 from torchvision import transforms
@@ -76,7 +77,7 @@ def accuracy(y_hat, y):
 def train_epoch(net, train_iter, loss, updater, num_classes=10):
     """训练模型一个迭代周期（定义见第3章）。"""
     # 将模型设置为训练模式
-    if isinstance(net, torch.nn.Module):
+    if isinstance(net, nn.Module):
         net.train()
     # 训练损失总和、训练准确度总和、样本数
     metric = Accumulator(3)
