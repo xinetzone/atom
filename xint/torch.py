@@ -14,7 +14,7 @@ _name = __name__.split('.')[1]
 np = import_np(_name)
 np.pi = np.acos(np.zeros(1)) * 2
 
-xinet = sys.modules[__name__]
+xint = sys.modules[__name__]
 
 # ======================================
 ## 特定于框架的类，函数等
