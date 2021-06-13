@@ -7,7 +7,7 @@ from tensorflow.keras.callbacks import Callback
 from .utils import Accumulator, Animator, Timer
 from .chaos import import_np, load_array as _load_array
 
-_name = __name__.split('.')[1]
+_name = __name__.split('.')[-1]
 
 np = import_np(_name)
 

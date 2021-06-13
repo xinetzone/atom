@@ -1,23 +1,24 @@
 import sys
 from matplotlib import pyplot as plt
+import numpy as npx
 
 import torch
 from torch import nn
 from torch.utils import data
 from torchvision import transforms, datasets
 
-from .utils import Accumulator, Animator
+from .utils import *
 from .chaos import import_np, load_array as _load_array
 
-_name = __name__.split('.')[1]
+_name = __name__.split('.')[-1]
 
 np = import_np(_name)
-np.pi = np.acos(np.zeros(1)) * 2
+np.pi = torch.tensor(npx.pi)  # np.acos(np.zeros(1)) * 2
 
 xint = sys.modules[__name__]
 
 # ======================================
-## 特定于框架的类，函数等
+# 特定于框架的类，函数等
 
 
 def get_dataloader_workers():
