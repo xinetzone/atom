@@ -159,9 +159,9 @@ class TrainCallback(Callback):
 
     def __init__(self, net, train_iter, test_iter, num_epochs, device_name):
         self.timer = Timer()
-        self.animator = Animator(
-            xlabel='epoch', xlim=[1, num_epochs],
-            legend=['train loss', 'train acc', 'test acc'])
+        self.animator = Animator(xlabel='epoch',
+                                 xlim=[1, num_epochs],
+                                 legend=['train loss', 'train acc', 'test acc'])
         self.net = net
         self.train_iter = train_iter
         self.test_iter = test_iter
@@ -188,7 +188,7 @@ class TrainCallback(Callback):
 
 
 def train(net_fn, train_iter, test_iter, num_epochs, lr, device):
-    """Train a model with a GPU (defined in Chapter 6)."""
+    """Train a model with a GPU"""
     device_name = device._device_name
     strategy = tf.distribute.OneDeviceStrategy(device_name)
     with strategy.scope():
