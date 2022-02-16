@@ -19,7 +19,7 @@ def tokenize(lines, token='word'):
     elif token == 'char':
         return [list(line) for line in lines]
     else:
-        print('错误：未知令牌类型：' + token)
+        print(f'错误：未知令牌类型：{token}')
 
 
 class Vocab:

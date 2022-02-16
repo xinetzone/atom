@@ -77,10 +77,10 @@ def try_gpu(i=0):
     """如果存在，则返回gpu(i)，否则返回cpu()。"""
     return npx.gpu(i) if npx.num_gpus() >= i + 1 else npx.cpu()
 
-def try_all_gpus(): 
+def try_all_gpus():
     """返回所有可用的GPU，如果没有GPU，则返回[cpu()]。"""
     devices = [npx.gpu(i) for i in range(npx.num_gpus())]
-    return devices if devices else [npx.cpu()]
+    return devices or [npx.cpu()]
 
 try_gpu(), try_gpu(10), try_all_gpus()
 
